@@ -1,13 +1,58 @@
 import plotly.express as px
-import plotly.graph_objects as go
+
+
+
+# ==========================
+# COMMON SETTINGS
+# ==========================
+
+CHART_HEIGHT = 450
+
+
+def apply_layout(fig, height=CHART_HEIGHT):
+
+    fig.update_layout(
+        template="plotly_white",
+        height=height,
+        hovermode="x unified"
+    )
+
+    return fig
+
+
+
+def empty_chart(title):
+
+    fig = px.scatter(
+        title=title
+    )
+
+    fig.update_layout(
+        template="plotly_white",
+        height=CHART_HEIGHT
+    )
+
+    return fig
+
+
+
+# ==========================
+# SALES TREND
+# ==========================
 
 
 def yearly_sales(df):
+
+    if df.empty:
+        return empty_chart("Yearly Sales Trend")
+
+
     data = (
-        df.groupby("order_year")["sales"]
+        df.groupby("order_year", as_index=False)
+        ["sales"]
         .sum()
-        .reset_index()
     )
+
 
     fig = px.line(
         data,
@@ -17,21 +62,23 @@ def yearly_sales(df):
         title="Yearly Sales Trend"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=450,
-        hovermode="x unified"
-    )
 
-    return fig
+    return apply_layout(fig)
+
 
 
 def monthly_sales(df):
+
+    if df.empty:
+        return empty_chart("Monthly Sales")
+
+
     data = (
-        df.groupby("order_month")["sales"]
+        df.groupby("order_month", as_index=False)
+        ["sales"]
         .sum()
-        .reset_index()
     )
+
 
     fig = px.bar(
         data,
@@ -40,20 +87,28 @@ def monthly_sales(df):
         title="Monthly Sales"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=450
-    )
 
-    return fig
+    return apply_layout(fig)
+
+
+
+# ==========================
+# CATEGORY / SEGMENT
+# ==========================
 
 
 def sales_by_category(df):
+
+    if df.empty:
+        return empty_chart("Sales by Category")
+
+
     data = (
-        df.groupby("category")["sales"]
+        df.groupby("category", as_index=False)
+        ["sales"]
         .sum()
-        .reset_index()
     )
+
 
     fig = px.pie(
         data,
@@ -63,17 +118,23 @@ def sales_by_category(df):
         title="Sales by Category"
     )
 
-    fig.update_layout(height=450)
 
-    return fig
+    return apply_layout(fig)
+
 
 
 def sales_by_segment(df):
+
+    if df.empty:
+        return empty_chart("Sales by Segment")
+
+
     data = (
-        df.groupby("segment")["sales"]
+        df.groupby("segment", as_index=False)
+        ["sales"]
         .sum()
-        .reset_index()
     )
+
 
     fig = px.bar(
         data,
@@ -82,21 +143,27 @@ def sales_by_segment(df):
         title="Sales by Segment"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=450
-    )
 
-    return fig
+    return apply_layout(fig)
+
 
 
 def region_sales(df):
+
+    if df.empty:
+        return empty_chart("Sales by Region")
+
+
     data = (
-        df.groupby("region")["sales"]
+        df.groupby("region", as_index=False)
+        ["sales"]
         .sum()
-        .sort_values(ascending=False)
-        .reset_index()
+        .sort_values(
+            "sales",
+            ascending=False
+        )
     )
+
 
     fig = px.bar(
         data,
@@ -105,21 +172,27 @@ def region_sales(df):
         title="Sales by Region"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=450
-    )
 
-    return fig
+    return apply_layout(fig)
+
 
 
 def market_sales(df):
+
+    if df.empty:
+        return empty_chart("Sales by Market")
+
+
     data = (
-        df.groupby("market")["sales"]
+        df.groupby("market", as_index=False)
+        ["sales"]
         .sum()
-        .sort_values(ascending=False)
-        .reset_index()
+        .sort_values(
+            "sales",
+            ascending=False
+        )
     )
+
 
     fig = px.bar(
         data,
@@ -128,21 +201,33 @@ def market_sales(df):
         title="Sales by Market"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=450
-    )
 
-    return fig
+    return apply_layout(fig)
+
+
+
+# ==========================
+# TOP PERFORMANCE
+# ==========================
 
 
 def top_products(df, top_n=10):
+
+    if df.empty:
+        return empty_chart("Top Products")
+
+
     data = (
-        df.groupby("product_name")["sales"]
+        df.groupby("product_name", as_index=False)
+        ["sales"]
         .sum()
-        .nlargest(top_n)
-        .reset_index()
+        .sort_values(
+            "sales",
+            ascending=False
+        )
+        .head(top_n)
     )
+
 
     fig = px.bar(
         data,
@@ -151,22 +236,33 @@ def top_products(df, top_n=10):
         title=f"Top {top_n} Products"
     )
 
+
     fig.update_layout(
-        template="plotly_white",
-        height=500,
         xaxis_tickangle=-35
     )
 
-    return fig
+
+    return apply_layout(fig, 500)
+
 
 
 def top_customers(df, top_n=10):
+
+    if df.empty:
+        return empty_chart("Top Customers")
+
+
     data = (
-        df.groupby("customer_name")["sales"]
+        df.groupby("customer_name", as_index=False)
+        ["sales"]
         .sum()
-        .nlargest(top_n)
-        .reset_index()
+        .sort_values(
+            "sales",
+            ascending=False
+        )
+        .head(top_n)
     )
+
 
     fig = px.bar(
         data,
@@ -175,16 +271,56 @@ def top_customers(df, top_n=10):
         title=f"Top {top_n} Customers"
     )
 
+
     fig.update_layout(
-        template="plotly_white",
-        height=500,
         xaxis_tickangle=-35
     )
 
-    return fig
+
+    return apply_layout(fig, 500)
+
+
+
+# ==========================
+# PROFIT ANALYSIS
+# ==========================
+
+
+def profit_by_category(df):
+
+    if df.empty:
+        return empty_chart("Profit by Category")
+
+
+    data = (
+        df.groupby("category", as_index=False)
+        ["profit"]
+        .sum()
+        .sort_values(
+            "profit",
+            ascending=False
+        )
+    )
+
+
+    fig = px.bar(
+        data,
+        x="category",
+        y="profit",
+        title="Profit by Category"
+    )
+
+
+    return apply_layout(fig)
+
 
 
 def discount_profit(df):
+
+    if df.empty:
+        return empty_chart("Discount vs Profit")
+
+
     fig = px.scatter(
         df,
         x="discount",
@@ -193,15 +329,17 @@ def discount_profit(df):
         title="Discount vs Profit"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=500
-    )
 
-    return fig
+    return apply_layout(fig, 500)
+
 
 
 def profit_distribution(df):
+
+    if df.empty:
+        return empty_chart("Profit Distribution")
+
+
     fig = px.histogram(
         df,
         x="profit",
@@ -209,9 +347,5 @@ def profit_distribution(df):
         title="Profit Distribution"
     )
 
-    fig.update_layout(
-        template="plotly_white",
-        height=450
-    )
 
-    return fig
+    return apply_layout(fig)

@@ -4,13 +4,17 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-from src.constants import FEATURE_DATA_FILE, MODEL_FILE
+from src.config import FEATURE_DATA_FILE, MODEL_FILE
 
+# ==========================
+# LOAD DATASET
+# ==========================
 
 @st.cache_data(show_spinner=False)
 def load_data():
+
     """
-    Load the engineered dataset.
+    Load Global Superstore dataset.
 
     Returns
     -------
@@ -19,51 +23,97 @@ def load_data():
 
     data_path = Path(FEATURE_DATA_FILE)
 
+
     if not data_path.exists():
+
         raise FileNotFoundError(
-            f"Dataset not found:\n{data_path}"
+            f"""
+            Dataset not found.
+
+            Expected location:
+            {data_path}
+
+            Check FEATURE_DATA_FILE inside constants.py
+            """
         )
 
-    df = pd.read_csv(data_path)
+
+    df = pd.read_csv(
+        data_path,
+        encoding="utf-8"
+    )
+
+
+    # Convert date columns
 
     date_columns = [
         "order_date",
         "ship_date"
     ]
 
+
     for column in date_columns:
+
         if column in df.columns:
+
             df[column] = pd.to_datetime(
                 df[column],
                 errors="coerce"
             )
 
-    return df.copy()
 
+    return df
+
+
+
+# ==========================
+# LOAD MACHINE LEARNING MODEL
+# ==========================
 
 @st.cache_resource(show_spinner=False)
 def load_model():
+
     """
-    Load trained machine learning model.
+    Load trained ML model.
 
     Returns
     -------
-    sklearn Pipeline
+    sklearn model
     """
+
 
     model_path = Path(MODEL_FILE)
 
+
     if not model_path.exists():
+
         raise FileNotFoundError(
-            f"Model not found:\n{model_path}"
+            f"""
+            Model file not found.
+
+            Expected location:
+            {model_path}
+
+            Train the model first.
+            """
         )
 
-    return joblib.load(model_path)
 
+    model = joblib.load(model_path)
+
+
+    return model
+
+
+
+# ==========================
+# DATASET INFORMATION
+# ==========================
 
 def get_dataset_shape():
+
     """
-    Return dataset shape.
+    Return dataset rows and columns.
     """
 
     df = load_data()
@@ -71,9 +121,11 @@ def get_dataset_shape():
     return df.shape
 
 
+
 def get_feature_columns():
+
     """
-    Return feature column names.
+    Return dataset columns.
     """
 
     df = load_data()
@@ -81,9 +133,85 @@ def get_feature_columns():
     return list(df.columns)
 
 
-def reload_data():
+
+def dataset_summary():
+
     """
-    Clear Streamlit cache and reload dataset.
+    Return dataset summary.
+    """
+
+    df = load_data()
+
+
+    return {
+
+        "Rows": len(df),
+
+        "Columns": len(df.columns),
+
+        "Missing Values": int(
+            df.isna().sum().sum()
+        ),
+
+        "Duplicate Rows": int(
+            df.duplicated().sum()
+        )
+    }
+
+
+
+# ==========================
+# VALIDATION
+# ==========================
+
+def validate_dataset(required_columns=None):
+
+    """
+    Check required columns exist.
+    """
+
+
+    df = load_data()
+
+
+    if required_columns is None:
+
+        return True
+
+
+
+    missing_columns = [
+
+        col
+        for col in required_columns
+        if col not in df.columns
+
+    ]
+
+
+    if missing_columns:
+
+        raise ValueError(
+
+            "Missing required columns: "
+            +
+            ", ".join(missing_columns)
+
+        )
+
+
+    return True
+
+
+
+# ==========================
+# CACHE CONTROL
+# ==========================
+
+def reload_data():
+
+    """
+    Clear dataset cache.
     """
 
     load_data.clear()
@@ -91,9 +219,11 @@ def reload_data():
     return load_data()
 
 
+
 def reload_model():
+
     """
-    Clear Streamlit cache and reload model.
+    Clear model cache.
     """
 
     load_model.clear()
@@ -101,67 +231,37 @@ def reload_model():
     return load_model()
 
 
-def validate_dataset(required_columns=None):
-    """
-    Validate dataset columns.
 
-    Parameters
-    ----------
-    required_columns : list, optional
-
-    Returns
-    -------
-    bool
-    """
-
-    df = load_data()
-
-    if required_columns is None:
-        return True
-
-    missing = [
-        column
-        for column in required_columns
-        if column not in df.columns
-    ]
-
-    if missing:
-        raise ValueError(
-            "Missing columns: "
-            + ", ".join(missing)
-        )
-
-    return True
-
-
-def dataset_summary():
-    """
-    Return dataset summary information.
-
-    Returns
-    -------
-    dict
-    """
-
-    df = load_data()
-
-    return {
-        "rows": len(df),
-        "columns": len(df.columns),
-        "missing_values": int(df.isna().sum().sum()),
-        "duplicate_rows": int(df.duplicated().sum()),
-    }
-
+# ==========================
+# TESTING
+# ==========================
 
 if __name__ == "__main__":
 
-    data = load_data()
+
+    df = load_data()
+
 
     print("=" * 60)
-    print("StoreScope Data Loader")
+
+    print("Global Superstore Data Loader")
+
     print("=" * 60)
-    print(f"Rows      : {len(data):,}")
-    print(f"Columns   : {len(data.columns)}")
-    print(f"Duplicates: {data.duplicated().sum()}")
-    print(f"Missing   : {data.isna().sum().sum()}")
+
+    print(
+        f"Rows      : {len(df):,}"
+    )
+
+    print(
+        f"Columns   : {len(df.columns)}"
+    )
+
+    print(
+        f"Missing   : {df.isna().sum().sum()}"
+    )
+
+    print(
+        f"Duplicate : {df.duplicated().sum()}"
+    )
+
     print("=" * 60)

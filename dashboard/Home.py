@@ -1,161 +1,110 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+import sys
 from pathlib import Path
 
+
+# =================================
+# ADD PROJECT ROOT TO PYTHON PATH
+# =================================
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+
+
+import streamlit as st
+
+
+from src.data_loader import load_data
+from src import components
+
+
+
+# =================================
+# PAGE CONFIG
+# =================================
+
 st.set_page_config(
-    page_title="Retail Analytics Dashboard",
+    page_title="StoreScope | Retail Analytics",
     page_icon="📊",
     layout="wide"
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
-DATA = BASE_DIR / "data" / "cleaned" / "global_superstore_features.csv"
 
-df = pd.read_csv(DATA)
+# =================================
+# LOAD DATA
+# =================================
 
-df["order_date"] = pd.to_datetime(df["order_date"])
+try:
 
-st.title("📊 Retail Analytics Dashboard")
+    df = load_data()
+
+except Exception as e:
+
+    st.error(
+        f"Data loading failed:\n\n{e}"
+    )
+
+    st.stop()
+
+
+
+# =================================
+# HEADER
+# =================================
+
+st.title(
+    "📊 StoreScope Retail Analytics Dashboard"
+)
+
 
 st.markdown(
-    "Interactive dashboard for Global Superstore Sales Analysis"
+    """
+    Interactive dashboard for Global Superstore
+    sales, profit, customer and product analysis.
+    """
 )
 
-st.sidebar.header("Filters")
 
-years = sorted(df["order_year"].unique())
 
-selected_year = st.sidebar.multiselect(
-    "Year",
-    years,
-    default=years
-)
+# =================================
+# FILTERS
+# =================================
 
-categories = sorted(df["category"].unique())
+filtered_df = components.dashboard_filters(df)
 
-selected_category = st.sidebar.multiselect(
-    "Category",
-    categories,
-    default=categories
-)
 
-markets = sorted(df["market"].unique())
 
-selected_market = st.sidebar.multiselect(
-    "Market",
-    markets,
-    default=markets
-)
+# =================================
+# DASHBOARD
+# =================================
 
-filtered = df[
-    (df["order_year"].isin(selected_year))
-    &
-    (df["category"].isin(selected_category))
-    &
-    (df["market"].isin(selected_market))
-]
+components.dashboard_view(filtered_df)
 
-sales = filtered["sales"].sum()
-profit = filtered["profit"].sum()
-orders = filtered["order_id"].nunique()
-customers = filtered["customer_id"].nunique()
 
-c1, c2, c3, c4 = st.columns(4)
 
-c1.metric("💰 Sales", f"${sales:,.0f}")
-
-c2.metric("📈 Profit", f"${profit:,.0f}")
-
-c3.metric("📦 Orders", orders)
-
-c4.metric("👤 Customers", customers)
+# =================================
+# EXPORT
+# =================================
 
 st.divider()
 
-left, right = st.columns(2)
+st.subheader(
+    "Export Filtered Data"
+)
 
-with left:
 
-    yearly = (
-        filtered.groupby("order_year")["sales"]
-        .sum()
-        .reset_index()
-    )
+csv = filtered_df.to_csv(
+    index=False
+).encode("utf-8")
 
-    fig = px.line(
-        yearly,
-        x="order_year",
-        y="sales",
-        markers=True,
-        title="Yearly Sales"
-    )
 
-    st.plotly_chart(fig, use_container_width=True)
-
-with right:
-
-    monthly = (
-        filtered.groupby("order_month")["sales"]
-        .sum()
-        .reset_index()
-    )
-
-    fig = px.bar(
-        monthly,
-        x="order_month",
-        y="sales",
-        title="Monthly Sales"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-left, right = st.columns(2)
-
-with left:
-
-    category = (
-        filtered.groupby("category")["sales"]
-        .sum()
-        .reset_index()
-    )
-
-    fig = px.pie(
-        category,
-        values="sales",
-        names="category",
-        title="Sales by Category"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-with right:
-
-    segment = (
-        filtered.groupby("segment")["sales"]
-        .sum()
-        .reset_index()
-    )
-
-    fig = px.bar(
-        segment,
-        x="segment",
-        y="sales",
-        title="Sales by Segment"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-st.subheader("Dataset Preview")
-
-st.dataframe(filtered.head(20), use_container_width=True)
-
-csv = filtered.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    "Download Filtered Dataset",
-    csv,
-    "filtered_data.csv",
-    "text/csv"
+    label="⬇️ Download CSV",
+    data=csv,
+    file_name="storescope_filtered_data.csv",
+    mime="text/csv"
 )
