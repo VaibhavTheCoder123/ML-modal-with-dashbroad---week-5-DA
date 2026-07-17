@@ -56,7 +56,7 @@ except Exception as e:
 # =================================
 
 st.title(
-    "📊 StoreScope Retail Analytics Dashboard"
+    "📊 StoreScope: Retail Analytics Dashboard"
 )
 
 

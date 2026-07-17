@@ -277,7 +277,7 @@ def show_tables(df):
 
 def dashboard_view(df):
 
-    st.title("📊 Sales Analytics Dashboard")
+    st.title("")
 
 
     show_kpis(df)
