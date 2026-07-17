@@ -1,34 +1,76 @@
 import streamlit as st
 
 
-def sidebar():
+def sidebar_filters(df):
 
-    with st.sidebar:
+    st.sidebar.header("Filters")
 
-        st.image("dashboard/assets/logo.png", width=110)
 
-        st.markdown("# StoreScope")
+    years = sorted(
+        df["order_year"].unique()
+    )
 
-        st.caption(
-            "Business Intelligence Platform"
-        )
+    selected_year = st.sidebar.multiselect(
+        "Year",
+        years,
+        default=years
+    )
 
-        st.divider()
 
-        st.markdown("### 📊 Dashboard")
+    categories = sorted(
+        df["category"].unique()
+    )
 
-        st.success(
-            """
-Model
+    selected_category = st.sidebar.multiselect(
+        "Category",
+        categories,
+        default=categories
+    )
 
-Gradient Boosting
 
-R² Score : 0.672
-"""
-        )
+    markets = sorted(
+        df["market"].unique()
+    )
 
-        st.divider()
+    selected_market = st.sidebar.multiselect(
+        "Market",
+        markets,
+        default=markets
+    )
 
-        st.caption(
-            "Developed by Vaibhav Jain"
-        )   
+
+    return (
+        selected_year,
+        selected_category,
+        selected_market
+    )
+
+
+
+def show_kpis(kpis):
+
+    c1, c2, c3, c4 = st.columns(4)
+
+
+    c1.metric(
+        "💰 Sales",
+        f"${kpis['sales']:,.0f}"
+    )
+
+
+    c2.metric(
+        "📈 Profit",
+        f"${kpis['profit']:,.0f}"
+    )
+
+
+    c3.metric(
+        "📦 Orders",
+        kpis["orders"]
+    )
+
+
+    c4.metric(
+        "👤 Customers",
+        kpis["customers"]
+    )
