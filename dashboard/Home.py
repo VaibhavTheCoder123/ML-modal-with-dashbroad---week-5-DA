@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-
+from pathlib import Path
 
 # =================================
 # ADD PROJECT ROOT TO PYTHON PATH
@@ -26,9 +26,10 @@ from src import components
 # =================================
 
 st.set_page_config(
-    page_title="StoreScope | Retail Analytics",
+    page_title="StoreScope | Retail Intelligence",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 
@@ -108,3 +109,13 @@ st.download_button(
     file_name="storescope_filtered_data.csv",
     mime="text/csv"
 )
+
+# Load Custom CSS
+
+css_path = Path(__file__).parent / "assets" / "style.css"
+
+with open(css_path) as f:
+    st.markdown(
+        f"<style>{f.read()}</style>",
+        unsafe_allow_html=True
+    )
