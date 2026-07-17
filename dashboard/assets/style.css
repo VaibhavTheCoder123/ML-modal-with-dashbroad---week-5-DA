@@ -1,371 +1,970 @@
-/* =====================================================
-   StoreScope Professional Dashboard Theme
-   ===================================================== */
+/* ==========================================================
+   STORESCOPE DASHBOARD
+   Professional Glassmorphism Theme
+   Part 1
+========================================================== */
 
+/* Google Font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-/* ---------- Main Background ---------- */
+/* ==========================================================
+   ROOT COLORS
+========================================================== */
 
-.stApp {
+:root{
 
-    background:
-    linear-gradient(
-        135deg,
-        #f8fafc 0%,
-        #eef2ff 45%,
-        #f8fafc 100%
-    );
+    --primary:#1565C0;
+    --secondary:#b92b27;
 
-    font-family:
-    "Inter",
-    "Segoe UI",
-    sans-serif;
+    --glass:rgba(20,25,35,.45);
+    --glass-dark:rgba(8,12,20,.70);
+
+    --border:rgba(255,255,255,.12);
+
+    --text:#FFFFFF;
+    --text-light:#D6DCE5;
+    --text-muted:#9CA3AF;
+
+    --shadow:
+        0 12px 40px rgba(0,0,0,.35);
 
 }
 
+/* ==========================================================
+   BACKGROUND
+========================================================== */
 
+html,
+body,
+[data-testid="stAppViewContainer"]{
 
-/* ---------- Main Content ---------- */
+    font-family:"Poppins",sans-serif;
 
-.block-container {
+    color:var(--text);
+
+    background:transparent;
+
+}
+
+.stApp{
+
+    background-image:
+
+        linear-gradient(
+            rgba(8,12,20,.55),
+            rgba(8,12,20,.55)
+        ),
+
+        url("data:image/jpeg;base64,__BACKGROUND__");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    background-attachment: fixed;
+
+}
+
+/* ==========================================================
+   MAIN CONTAINER
+========================================================== */
+
+.main .block-container{
 
     max-width:1400px;
 
     padding-top:2rem;
 
-    padding-bottom:3rem;
+    padding-bottom:2rem;
+
+    padding-left:2rem;
+
+    padding-right:2rem;
+
+    border-radius:30px;
+
+    background:var(--glass);
+
+    backdrop-filter:blur(22px);
+
+    -webkit-backdrop-filter:blur(22px);
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+    margin-top:18px;
+
+    margin-bottom:18px;
 
 }
 
 
+/* ==========================================================
+   TYPOGRAPHY
+========================================================== */
 
-/* ---------- Header ---------- */
+h1{
 
+    color:white !important;
 
-h1 {
+    font-size:3rem !important;
 
-    color:#0f172a;
+    font-weight:700 !important;
 
-    font-weight:800;
-
-    letter-spacing:-1px;
+    letter-spacing:.5px;
 
 }
 
+h2{
 
-h2,h3 {
-
-    color:#1e293b;
+    color:white !important;
 
     font-weight:700;
 
 }
 
+h3{
+
+    color:white !important;
+
+    font-weight:600;
+
+}
+
+h4{
+
+    color:#E5E7EB !important;
+
+}
+
+h5{
+
+    color:#E5E7EB !important;
+
+}
+
+h6{
+
+    color:#CBD5E1 !important;
+
+}
+
+p,
+span,
+label,
+small{
+
+    color:#E5E7EB !important;
+
+}
+
+a{
+
+    color:#93C5FD !important;
+
+    text-decoration:none;
+
+}
+
+a:hover{
+
+    color:white !important;
+
+}
 
 
-/* ---------- Sidebar ---------- */
+/* ==========================================================
+   SIDEBAR
+========================================================== */
 
-
-section[data-testid="stSidebar"] {
-
+[data-testid="stSidebar"]{
 
     background:
 
-    linear-gradient(
-        180deg,
-        #ffffff,
-        #f1f5f9
-    );
+        rgba(10,15,24,.82);
 
+    backdrop-filter:blur(18px);
 
     border-right:
 
-    1px solid #e2e8f0;
+        1px solid rgba(255,255,255,.08);
+
+}
+
+[data-testid="stSidebar"] *{
+
+    color:white !important;
+
+}
+
+[data-testid="stSidebarNav"]{
+
+    padding-top:10px;
 
 }
 
 
+/* ==========================================================
+   DIVIDER
+========================================================== */
 
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] h2 {
+hr{
 
+    border:none;
 
-    color:#0f172a;
-
-}
-
-
-
-/* ---------- Sidebar Text ---------- */
-
-
-section[data-testid="stSidebar"] label {
-
-    color:#334155;
-
-    font-weight:600;
-
-}
-
-
-
-/* ---------- KPI Cards ---------- */
-
-
-[data-testid="stMetric"] {
-
+    height:1px;
 
     background:
 
-    rgba(
-        255,
-        255,
-        255,
-        0.85
-    );
+        rgba(255,255,255,.08);
+
+    margin-top:25px;
+
+    margin-bottom:25px;
+
+}
 
 
-    border-radius:18px;
+/* ==========================================================
+   METRIC CARDS
+========================================================== */
 
+[data-testid="stMetric"]{
 
-    padding:20px;
+    background:
 
+        linear-gradient(
+
+            135deg,
+
+            rgba(255,255,255,.09),
+
+            rgba(255,255,255,.04)
+
+        );
 
     border:
 
-    1px solid #e2e8f0;
+        1px solid rgba(255,255,255,.12);
 
+    border-radius:22px;
+
+    padding:22px;
+
+    backdrop-filter:blur(16px);
+
+    transition:.30s;
 
     box-shadow:
 
-    0 8px 25px
+        0 8px 24px rgba(0,0,0,.20);
 
-    rgba(
-        15,
-        23,
-        42,
-        0.08
-    );
+}
+
+/* ==========================================================
+   STORESCOPE DASHBOARD
+   Professional Glassmorphism Theme
+   Part 2
+========================================================== */
 
 
-    transition:
+/* ==========================================================
+   KPI CARDS
+========================================================== */
 
-    all 0.25s ease;
+[data-testid="stMetric"]:hover{
 
+    transform:translateY(-6px);
+
+    border:1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.35);
 
 }
 
 
+[data-testid="stMetricLabel"]{
 
-[data-testid="stMetric"]:hover {
+    color:#CBD5E1 !important;
 
+    font-size:.95rem !important;
 
-    transform:
-
-    translateY(-5px);
-
-
-    box-shadow:
-
-    0 15px 35px
-
-    rgba(
-        15,
-        23,
-        42,
-        0.15
-    );
+    font-weight:500 !important;
 
 }
 
 
+[data-testid="stMetricValue"]{
 
-/* KPI Label */
+    color:white !important;
 
-[data-testid="stMetricLabel"] {
+    font-size:2rem !important;
+
+    font-weight:700 !important;
+
+}
 
 
-    color:#64748b;
+[data-testid="stMetricDelta"]{
 
-    font-size:14px;
+    font-size:1rem !important;
+
+}
+
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.stButton>button{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:.75rem 1.2rem;
+
+    color:white;
 
     font-weight:600;
 
-}
+    background:
+        linear-gradient(
+            135deg,
+            #1565C0,
+            #b92b27
+        );
 
+    transition:.3s;
 
-
-/* KPI Value */
-
-[data-testid="stMetricValue"] {
-
-
-    color:#0f172a;
-
-    font-size:32px;
-
-    font-weight:800;
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.25);
 
 }
 
 
+.stButton>button:hover{
 
-/* ---------- Chart Cards ---------- */
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.35);
+
+}
 
 
-div[data-testid="stPlotlyChart"] {
+/* ==========================================================
+   DOWNLOAD BUTTON
+========================================================== */
+
+.stDownloadButton>button{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:.8rem;
+
+    font-weight:600;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1565C0,
+            #b92b27
+        );
+
+    transition:.3s;
+
+}
 
 
-    background:white;
+.stDownloadButton>button:hover{
 
+    transform:scale(1.02);
+
+}
+
+
+/* ==========================================================
+   DATAFRAMES
+========================================================== */
+
+[data-testid="stDataFrame"]{
 
     border-radius:18px;
 
+    overflow:hidden;
 
-    padding:15px;
+    border:1px solid rgba(255,255,255,.10);
 
+    background:
+        rgba(15,20,30,.50);
 
-    border:
-
-    1px solid #e2e8f0;
-
-
-    box-shadow:
-
-    0 5px 20px
-
-    rgba(
-        15,
-        23,
-        42,
-        0.06
-    );
-
+    backdrop-filter:blur(14px);
 
 }
 
 
+[data-testid="stTable"]{
 
-/* ---------- Tables ---------- */
-
-
-[data-testid="stDataFrame"] {
-
-
-    border-radius:15px;
-
-
-    border:
-
-    1px solid #e2e8f0;
-
+    border-radius:18px;
 
     overflow:hidden;
 
 }
 
 
+/* ==========================================================
+   TABS
+========================================================== */
 
-/* ---------- Buttons ---------- */
+.stTabs{
+
+    margin-top:10px;
+
+}
 
 
-.stButton button,
-.stDownloadButton button {
+.stTabs [role="tablist"]{
+
+    gap:10px;
+
+    border-bottom:none;
+
+}
 
 
-    background:
-
-    linear-gradient(
-        135deg,
-        #2563eb,
-        #1d4ed8
-    );
-
+.stTabs [role="tab"]{
 
     color:white;
 
+    border-radius:14px;
 
-    border:none;
+    padding:10px 20px;
 
+    background:
+        rgba(255,255,255,.06);
 
-    border-radius:12px;
-
-
-    padding:
-
-    10px 22px;
-
-
-    font-weight:700;
-
+    transition:.3s;
 
 }
 
 
+.stTabs [aria-selected="true"]{
 
-.stButton button:hover,
-.stDownloadButton button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #1565C0,
+            #b92b27
+        );
 
+}
+
+
+/* ==========================================================
+   EXPANDERS
+========================================================== */
+
+.streamlit-expanderHeader{
+
+    font-weight:600;
+
+    color:white;
+
+}
+
+
+details{
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.10);
+
+    background:
+        rgba(255,255,255,.05);
+
+}
+
+
+/* ==========================================================
+   INPUTS
+========================================================== */
+
+.stSelectbox div[data-baseweb="select"],
+
+.stMultiSelect div[data-baseweb="select"],
+
+.stTextInput input,
+
+.stNumberInput input,
+
+.stDateInput input{
+
+    background:
+        rgba(255,255,255,.08) !important;
+
+    color:white !important;
+
+    border-radius:12px !important;
+
+    border:1px solid rgba(255,255,255,.12) !important;
+
+}
+
+
+/* ==========================================================
+   SLIDER
+========================================================== */
+
+.stSlider{
+
+    padding-top:10px;
+
+}
+
+
+/* ==========================================================
+   CHECKBOX
+========================================================== */
+
+.stCheckbox{
+
+    color:white;
+
+}
+
+
+/* ==========================================================
+   RADIO
+========================================================== */
+
+.stRadio{
+
+    color:white;
+
+}
+
+
+/* ==========================================================
+   MARKDOWN BLOCKS
+========================================================== */
+
+.element-container{
+
+    animation:fadeIn .45s ease;
+
+}
+
+
+/* ==========================================================
+   SUCCESS / INFO / WARNING
+========================================================== */
+
+.stAlert{
+
+    border-radius:16px;
+
+}
+
+
+/* ==========================================================
+   CODE BLOCKS
+========================================================== */
+
+code{
+
+    color:#90CAF9;
+
+}
+
+
+pre{
+
+    border-radius:16px;
+
+}
+
+
+/* ==========================================================
+   IMAGES
+========================================================== */
+
+img{
+
+    border-radius:16px;
+
+}
+
+
+/* ==========================================================
+   ANIMATION
+========================================================== */
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(12px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ==========================================================
+   STORESCOPE DASHBOARD
+   Professional Glassmorphism Theme
+   Part 3
+========================================================== */
+
+
+/* ==========================================================
+   PLOTLY CHARTS
+========================================================== */
+
+.js-plotly-plot{
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:transparent;
+
+}
+
+
+.js-plotly-plot .plotly{
+
+    border-radius:20px;
+
+}
+
+
+[data-testid="stPlotlyChart"]{
 
     background:
 
-    linear-gradient(
-        135deg,
-        #1d4ed8,
-        #1e40af
-    );
-
-}
-
-
-
-/* ---------- Select Boxes ---------- */
-
-
-div[data-baseweb="select"] > div {
-
-
-    border-radius:12px;
-
-}
-
-
-
-/* ---------- Divider ---------- */
-
-
-hr {
-
+        rgba(255,255,255,.05);
 
     border:
 
-    0;
+        1px solid rgba(255,255,255,.08);
 
+    border-radius:20px;
 
-    border-top:
+    padding:15px;
 
-    1px solid #e2e8f0;
+    backdrop-filter:blur(16px);
 
+    transition:.35s;
+
+    box-shadow:
+
+        0 10px 30px rgba(0,0,0,.22);
 
 }
 
 
+[data-testid="stPlotlyChart"]:hover{
 
-/* ---------- Footer ---------- */
+    transform:translateY(-4px);
+
+    box-shadow:
+
+        0 18px 42px rgba(0,0,0,.35);
+
+}
 
 
-.footer {
+/* ==========================================================
+   DATAFRAME HOVER
+========================================================== */
 
+[data-testid="stDataFrame"]{
+
+    transition:.3s;
+
+}
+
+
+[data-testid="stDataFrame"]:hover{
+
+    box-shadow:
+
+        0 12px 30px rgba(0,0,0,.30);
+
+}
+
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+
+::-webkit-scrollbar-track{
+
+    background:
+
+        rgba(255,255,255,.05);
+
+}
+
+
+::-webkit-scrollbar-thumb{
+
+    background:
+
+        linear-gradient(
+            #1565C0,
+            #b92b27
+        );
+
+    border-radius:20px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:
+
+        linear-gradient(
+            #1976D2,
+            #d32f2f
+        );
+
+}
+
+
+/* ==========================================================
+   SELECTION
+========================================================== */
+
+::selection{
+
+    background:#1565C0;
+
+    color:white;
+
+}
+
+
+/* ==========================================================
+   LINKS
+========================================================== */
+
+a{
+
+    transition:.25s;
+
+}
+
+
+a:hover{
+
+    text-shadow:
+
+        0 0 12px rgba(255,255,255,.40);
+
+}
+
+
+/* ==========================================================
+   GLASS EFFECT FOR CONTAINERS
+========================================================== */
+
+div[data-testid="stVerticalBlock"]{
+
+    border-radius:18px;
+
+}
+
+
+/* ==========================================================
+   HOVER GLOW
+========================================================== */
+
+[data-testid="stMetric"]:hover,
+
+[data-testid="stPlotlyChart"]:hover,
+
+[data-testid="stDataFrame"]:hover{
+
+    border-color:
+
+        rgba(255,255,255,.22);
+
+}
+
+
+/* ==========================================================
+   SPACING
+========================================================== */
+
+section.main>div{
+
+    padding-top:0;
+
+}
+
+
+/* ==========================================================
+   CAPTIONS
+========================================================== */
+
+.caption{
+
+    color:#CBD5E1;
+
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+footer{
+
+    visibility:hidden;
+
+}
+
+
+footer:after{
+
+    content:"© 2026 StoreScope • Developed by Vaibhav Jain";
+
+    visibility:visible;
+
+    display:block;
 
     text-align:center;
 
+    color:#CBD5E1;
 
-    color:#64748b;
+    padding:18px;
+
+    font-size:.9rem;
+
+}
 
 
-    font-size:14px;
+/* ==========================================================
+   STREAMLIT MENU
+========================================================== */
+
+#MainMenu{
+
+    visibility:hidden;
+
+}
 
 
-    margin-top:40px;
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
 
+@media (max-width:992px){
+
+.main .block-container{
+
+    padding:1rem;
+
+}
+
+h1{
+
+    font-size:2rem !important;
+
+}
+
+[data-testid="stMetricValue"]{
+
+    font-size:1.5rem !important;
+
+}
+
+[data-testid="stPlotlyChart"]{
+
+    padding:10px;
+
+}
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:640px){
+
+.main .block-container{
+
+    border-radius:16px;
+
+}
+
+.stButton>button,
+
+.stDownloadButton>button{
+
+    font-size:.95rem;
+
+}
+
+}
+
+
+/* ==========================================================
+   FINAL POLISH
+========================================================== */
+
+*{
+
+    scroll-behavior:smooth;
+
+    box-sizing:border-box;
+
+}
+
+html{
+
+    font-size:16px;
+
+}
+
+body{
+
+    overflow-x:hidden;
 
 }
