@@ -1,65 +1,164 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+import sys
 from pathlib import Path
 
-st.set_page_config(page_title="Products", layout="wide")
+import streamlit as st
+import plotly.express as px
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+# ==========================================================
+# PROJECT ROOT
+# ==========================================================
 
-df = pd.read_csv(
-    BASE_DIR /
-    "data" /
-    "cleaned" /
-    "global_superstore_features.csv"
+ROOT_DIR = Path(__file__).resolve().parents[2]
+
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# ==========================================================
+# IMPORTS
+# ==========================================================
+
+from src.utils import load_css
+from src.data_loader import load_data
+from src import analytics
+from src import charts
+
+# ==========================================================
+# PAGE CONFIG
+# ==========================================================
+
+st.set_page_config(
+    page_title="Product Dashboard",
+    page_icon="📦",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-st.title("📦 Product Dashboard")
+load_css()
 
-category = (
-    df.groupby("category")["profit"]
-    .sum()
-    .reset_index()
+# ==========================================================
+# LOAD DATA
+# ==========================================================
+
+try:
+    df = load_data()
+
+except Exception as e:
+
+    st.error(f"Unable to load dataset.\n\n{e}")
+    st.stop()
+
+# ==========================================================
+# HERO SECTION
+# ==========================================================
+
+st.markdown(
+    """
+<div class="hero">
+
+<h1>📦 Product Dashboard</h1>
+
+<p>
+Analyze product performance, category profitability,
+sub-category trends and top-selling products across
+the Global Superstore dataset.
+</p>
+
+</div>
+""",
+unsafe_allow_html=True
 )
+
+# ==========================================================
+# CATEGORY ANALYSIS
+# ==========================================================
+
+st.markdown("## 📊 Category Performance")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    st.plotly_chart(
+        charts.profit_by_category(df),
+        use_container_width=True
+    )
+
+with col2:
+
+    st.plotly_chart(
+        charts.sales_by_category(df),
+        use_container_width=True
+    )
+
+st.divider()
+
+# ==========================================================
+# TOP SUB-CATEGORIES
+# ==========================================================
+
+st.markdown("## 🏷️ Top Selling Sub-Categories")
+
+subcategory = analytics.sales_by_subcategory(df).head(15)
 
 fig = px.bar(
-    category,
-    x="category",
-    y="profit",
-    title="Profit by Category"
-)
-
-st.plotly_chart(fig, use_container_width=True)
-
-sub = (
-    df.groupby("sub_category")["sales"]
-    .sum()
-    .sort_values(ascending=False)
-    .head(15)
-    .reset_index()
-)
-
-fig = px.bar(
-    sub,
+    subcategory,
     x="sub_category",
     y="sales",
-    title="Top Sub Categories"
+    title="Top 15 Sub-Categories"
 )
 
-st.plotly_chart(fig, use_container_width=True)
-
-products = (
-    df.groupby("product_name")["sales"]
-    .sum()
-    .nlargest(15)
-    .reset_index()
+fig.update_layout(
+    xaxis_tickangle=-35,
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)"
 )
 
-fig = px.bar(
-    products,
-    x="product_name",
-    y="sales",
-    title="Top Products"
+st.plotly_chart(
+    fig,
+    use_container_width=True
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.divider()
+
+# ==========================================================
+# TOP PRODUCTS
+# ==========================================================
+
+st.markdown("## ⭐ Top Selling Products")
+
+st.plotly_chart(
+    charts.top_products(df, 15),
+    use_container_width=True
+)
+
+st.divider()
+
+# ==========================================================
+# PRODUCT TABLE
+# ==========================================================
+
+st.markdown("## 📋 Best Performing Products")
+
+st.dataframe(
+    analytics.top_products(df, 20),
+    use_container_width=True,
+    hide_index=True
+)
+
+st.divider()
+
+# ==========================================================
+# DOWNLOAD
+# ==========================================================
+
+st.markdown("## ⬇️ Export Product Data")
+
+csv = analytics.top_products(df, 100).to_csv(index=False).encode("utf-8")
+
+st.download_button(
+    label="Download Product Report",
+    data=csv,
+    file_name="product_dashboard.csv",
+    mime="text/csv",
+    use_container_width=True
+)

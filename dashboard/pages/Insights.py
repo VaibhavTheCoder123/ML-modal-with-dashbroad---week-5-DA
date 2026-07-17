@@ -1,83 +1,184 @@
-import streamlit as st
-import pandas as pd
+import sys
 from pathlib import Path
 
-st.set_page_config(page_title="Business Insights", layout="wide")
+import streamlit as st
 
-BASE_DIR = Path(__file__).resolve().parents[2]
+# ==========================================================
+# PROJECT ROOT
+# ==========================================================
 
-DATA = BASE_DIR / "data" / "cleaned" / "global_superstore_features.csv"
+ROOT_DIR = Path(__file__).resolve().parents[2]
 
-df = pd.read_csv(DATA)
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-st.title("📋 Business Insights")
+# ==========================================================
+# IMPORTS
+# ==========================================================
 
-sales = df["sales"].sum()
-profit = df["profit"].sum()
-orders = df["order_id"].nunique()
-customers = df["customer_id"].nunique()
+from src.utils import load_css
+from src.data_loader import load_data
+from src import analytics
+
+# ==========================================================
+# PAGE CONFIG
+# ==========================================================
+
+st.set_page_config(
+    page_title="Business Insights",
+    page_icon="💡",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+load_css()
+
+# ==========================================================
+# LOAD DATA
+# ==========================================================
+
+try:
+    df = load_data()
+
+except Exception as e:
+
+    st.error(f"Unable to load dataset.\n\n{e}")
+    st.stop()
+
+# ==========================================================
+# HERO
+# ==========================================================
+
+st.markdown(
+"""
+<div class="hero">
+
+<h1>💡 Business Insights</h1>
+
+<p>
+Executive overview of business performance,
+key findings and strategic recommendations
+generated from the Global Superstore dataset.
+</p>
+
+</div>
+""",
+unsafe_allow_html=True
+)
+
+# ==========================================================
+# KPI SECTION
+# ==========================================================
+
+kpi = analytics.get_kpis(df)
 
 c1, c2, c3, c4 = st.columns(4)
 
-c1.metric("Sales", f"${sales:,.0f}")
-c2.metric("Profit", f"${profit:,.0f}")
-c3.metric("Orders", orders)
-c4.metric("Customers", customers)
+c1.metric(
+    "💰 Total Sales",
+    f"${kpi['total_sales']:,.0f}"
+)
+
+c2.metric(
+    "📈 Total Profit",
+    f"${kpi['total_profit']:,.0f}"
+)
+
+c3.metric(
+    "📦 Total Orders",
+    kpi["total_orders"]
+)
+
+c4.metric(
+    "👤 Customers",
+    kpi["total_customers"]
+)
 
 st.divider()
 
-highest_category = (
-    df.groupby("category")["sales"]
-    .sum()
-    .idxmax()
-)
+# ==========================================================
+# BUSINESS INSIGHTS
+# ==========================================================
 
-highest_market = (
-    df.groupby("market")["sales"]
-    .sum()
-    .idxmax()
-)
+st.markdown("## 📊 Key Business Insights")
 
-highest_product = (
-    df.groupby("product_name")["sales"]
-    .sum()
-    .idxmax()
-)
+highest_category = analytics.sales_by_category(df).iloc[0]["category"]
 
-highest_customer = (
-    df.groupby("customer_name")["sales"]
-    .sum()
-    .idxmax()
-)
+highest_market = analytics.sales_by_market(df).iloc[0]["market"]
 
-st.subheader("Key Business Insights")
+highest_region = analytics.sales_by_region(df).iloc[0]["region"]
+
+top_product = analytics.top_products(df, 1).iloc[0]["product_name"]
+
+top_customer = analytics.top_customers(df, 1).iloc[0]["customer_name"]
+
+profit_margin = kpi["profit_margin"]
+
+avg_discount = kpi["average_discount"]
+
+shipping_days = kpi["average_shipping_days"]
 
 st.success(
-    f"""
-• Highest Revenue Category : {highest_category}
+f"""
+### 📈 Performance Highlights
 
-• Best Performing Market : {highest_market}
-
-• Top Product : {highest_product}
-
-• Highest Revenue Customer : {highest_customer}
+- 🛍️ Highest Revenue Category: **{highest_category}**
+- 🌍 Best Performing Market: **{highest_market}**
+- 📍 Best Performing Region: **{highest_region}**
+- ⭐ Top Selling Product: **{top_product}**
+- 👤 Highest Revenue Customer: **{top_customer}**
+- 💹 Profit Margin: **{profit_margin:.2f}%**
+- 🎯 Average Discount: **{avg_discount:.2%}**
+- 🚚 Average Shipping Time: **{shipping_days:.2f} Days**
 """
 )
 
-st.subheader("Recommendations")
+st.divider()
+
+# ==========================================================
+# RECOMMENDATIONS
+# ==========================================================
+
+st.markdown("## 🚀 Strategic Recommendations")
 
 st.info(
 """
-✅ Increase inventory for top-selling products.
+### Growth Strategy
 
-✅ Focus marketing on the highest-performing market.
+✅ Increase inventory for the highest-selling products.
 
-✅ Improve discounts for low-performing categories.
+✅ Invest more marketing budget in the best-performing markets.
 
-✅ Reward high-value customers.
+✅ Focus promotions on low-performing categories.
 
-✅ Reduce shipping time where possible.
+✅ Introduce loyalty programs for top-value customers.
 
-✅ Monitor loss-making products regularly.
+✅ Reduce shipping time to improve customer satisfaction.
+
+✅ Review products with low profit margins.
+
+✅ Monitor high-discount products to avoid unnecessary profit loss.
+
+✅ Expand successful product categories into emerging markets.
 """
 )
+
+st.divider()
+
+# ==========================================================
+# DATA SUMMARY
+# ==========================================================
+
+st.markdown("## 📋 Dataset Overview")
+
+summary = analytics.dataset_overview(df)
+
+c1, c2, c3, c4 = st.columns(4)
+
+c1.metric("Rows", summary["Rows"])
+
+c2.metric("Columns", summary["Columns"])
+
+c3.metric("Missing Values", summary["Missing Values"])
+
+c4.metric("Duplicate Rows", summary["Duplicate Rows"])

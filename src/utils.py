@@ -1,41 +1,35 @@
-import pandas as pd
+import base64
+from pathlib import Path
+import streamlit as st
 
 
-def standardize_columns(df):
-    df.columns = (
-        df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(" ", "_")
-        .str.replace("-", "_")
+def load_css():
+
+    assets = Path(__file__).resolve().parent.parent / "dashboard" / "assets"
+
+    css_file = assets / "style.css"
+
+    background = assets / "background.jpg"      # change if png
+
+    if not css_file.exists():
+        return
+
+    css = css_file.read_text(encoding="utf-8")
+
+    if background.exists():
+
+        with open(background, "rb") as img:
+
+            encoded = base64.b64encode(
+                img.read()
+            ).decode()
+
+        css = css.replace(
+            "__BACKGROUND__",
+            encoded
+        )
+
+    st.markdown(
+        f"<style>{css}</style>",
+        unsafe_allow_html=True
     )
-    return df
-
-
-def convert_dates(df):
-    for col in ["order_date", "ship_date"]:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
-    return df
-
-
-def clean_missing(df):
-    object_cols = df.select_dtypes(include="object").columns
-    numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns
-
-    for col in object_cols:
-        df[col] = df[col].fillna("Unknown")
-
-    for col in numeric_cols:
-        df[col] = df[col].fillna(df[col].median())
-
-    return df
-
-
-def remove_duplicates(df):
-    return df.drop_duplicates()
-
-
-def remove_invalid_rows(df):
-    df = df[df["sales"] >= 0]
-    df = df[df["quantity"] > 0]
-    return df.reset_index(drop=True)
